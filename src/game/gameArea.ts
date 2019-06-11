@@ -1,10 +1,10 @@
-import { request } from "https";
+// import { request } from "https";
 
 class GameArea {
     constructor(getInputStateFunc: () => InputState
-            , mouseMoveHandler: (evt: MouseEvent) => void
-            , clickHandler: (evt: MouseEvent) => void
-            , unclickHandler: (evt: MouseEvent) => void) {
+        , mouseMoveHandler: (evt: MouseEvent) => void
+        , clickHandler: (evt: MouseEvent) => void
+        , unclickHandler: (evt: MouseEvent) => void) {
         this.getInputState = getInputStateFunc;
         this.gameState.playerUnit = new ItemImage(this.viewPortWidth / 2, this.viewPortHeight / 2, "./assets/fly.jpg", 30, 30);
         this.gameState.field.gridEnabled = true;
@@ -25,7 +25,7 @@ class GameArea {
     public gameState: GameState = new GameState();
     public stateService: GameStateService = new GameStateService();
     public renderingService: RenderingService = new RenderingService();
-    // public updateGameAreaInterval: number = 0;
+    public updateGameAreaInterval: number = 0;
 
     private getInputState: () => InputState;
 
@@ -39,8 +39,7 @@ class GameArea {
         this.canvas.style.borderStyle = "solid";
 
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-        requestAnimationFrame(this.gameAreaUpdate.bind(this));
-        // this.updateGameAreaInterval = setInterval(this.gameAreaUpdate.bind(this), 8) as unknown as number;
+        this.updateGameAreaInterval = setInterval(this.gameAreaUpdate.bind(this), 8) as unknown as number;
     };
 
     public gameAreaUpdate() {
