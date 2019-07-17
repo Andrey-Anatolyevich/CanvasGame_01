@@ -5,4 +5,5 @@ class GameField {
     public gridStep: number = 0;
 
     public backgroundItems: Array<ItemBase> = [];
+    public interactibleItems: Array<ItemBase> = [];
 }

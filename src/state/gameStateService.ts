@@ -1,45 +1,33 @@
 class GameStateService {
-    constructor() {
+    constructor(audioService: AudioService, geometryCalc: GeometryCalc) {
         this.stateUpdators.push(new itemSquareUpdator());
-        this.stateUpdators.push(new ItemImageUpdator());
+        this.stateUpdators.push(new ItemImageUpdator(geometryCalc));
+        this.stateUpdators.push(new PlayerUnitUpdator(audioService, geometryCalc));
+        this.stateUpdators.push(new MonsterDummyUpdator(audioService, geometryCalc));
+        this.stateUpdators.push(new BulletSimpleUpdator(audioService, geometryCalc));
+        this.stateUpdators.push(new SpawnerSimpleUpdator());
+
+        this.cleaners.push(new BulletsCleaner());
     }
 
     private stateUpdators: Array<IStateUpdator> = [];
+    private cleaners: Array<ICleaner> = [];
 
-    updateState(stateToUpdate: GameState, inputState: InputState): void {
-        stateToUpdate.bullets.forEach(component => this.updateItemState(component, inputState));
-        stateToUpdate.field.backgroundItems.forEach(component => this.updateItemState(component, inputState));
+    updateState(gameState: GameState, inputState: InputState): void {
+        gameState.bullets.forEach(component => this.updateItemState(gameState, inputState, component));
+        gameState.field.backgroundItems.forEach(component => this.updateItemState(gameState, inputState, component));
+        gameState.field.interactibleItems.forEach(component => this.updateItemState(gameState, inputState, component));
 
-        this.updateItemState(stateToUpdate.playerUnit, inputState, true);
+        this.updateItemState(gameState, inputState, gameState.playerUnit, true);
 
-        // __________________________Bullets
-        // Retire far ones.
-        stateToUpdate.bullets = stateToUpdate.bullets.filter(x => {
-            let blt = (x as ItemImage);
-            var result = -1000 < blt.x
-                && blt.x < 1000
-                && -1000 < blt.y
-                && blt.y < 1000;
-            return result;
-        });
+        gameState.monsters.forEach(monster => this.updateItemState(gameState, inputState, monster, false));
 
-        // Fire new one
-        if (inputState.pressedButtons.indexOf(InputButton.Fire) >= 0) {
-            this.fireBullet(stateToUpdate);
-        }
-        // __________________________Bullets
+        this.cleaners.forEach(cleaner => cleaner.clean(gameState));
 
-        // __________________________Overlay
-        stateToUpdate.overlayText = [];
-        let activatedButtons = '';
-        inputState.pressedButtons.forEach((value) => activatedButtons += (" " + value.toString()));
-        stateToUpdate.overlayText.push(new ItemText(10, 20, "Arial", "12px", "Black", [`Buttons: ${activatedButtons.trim()}`]));
-        stateToUpdate.overlayText.push(new ItemText(10, 35, "Arial", "12px", "Black", [`Mouse Position: x: ${inputState.cursorPosition.x}, y: ${inputState.cursorPosition.y}`]));
-        stateToUpdate.overlayText.push(new ItemText(10, 50, "Arial", "12px", "Black", [`Bullets: ${stateToUpdate.bullets.length}`]));
-        // _________________________Overlay
+        this.updateOverlayText(gameState, inputState);
     }
 
-    updateItemState(component: ItemBase, inputState: InputState, controlledByInput: boolean = false): void {
+    updateItemState(gameState: GameState, inputState: InputState, component: ItemBase, controlledByInput: boolean = false): void {
         if (component == null)
             return;
 
@@ -48,23 +36,18 @@ class GameStateService {
         if (componentUpdator == null)
             throw new Error(`Can't find state updator for item type: '${componentType}'.`);
 
-        componentUpdator.update(component, inputState, controlledByInput);
+        componentUpdator.update(gameState, inputState, component, controlledByInput);
     }
 
-    fireBullet(state: GameState): void {
-        let playerUnit = state.playerUnit as ItemImage;
-        let dateDiff = new Date().getTime() - playerUnit.lastBulletFired.getTime();
+    updateOverlayText(gameState: GameState, inputState: InputState): void {
+        gameState.overlayText = [];
+        let activatedButtons = '';
+        inputState.pressedButtons.forEach((value) => activatedButtons += (" " + value.toString()));
 
-        if (dateDiff < 300)
-            return;
+        gameState.overlayText.push(new ItemText(10, 20, "Arial", "12px", "Grey", [`Monsters killed: ${gameState.monstersKilled}`]));
 
-        playerUnit.lastBulletFired = new Date();
-
-        let newBullet = new ItemImage(playerUnit.x, playerUnit.y, './assets/bullet.png', 15, 6);
-        newBullet.bodyAngle = Object.assign(new Angle(), playerUnit.bodyAngle);
-        newBullet.speedX = 5 * Math.cos(newBullet.bodyAngle.valueRads);
-        newBullet.speedY = 5 * Math.sin(newBullet.bodyAngle.valueRads);
-
-        state.bullets.push(newBullet);
+        if (gameState.playerIsDead) {
+            gameState.overlayText.push(new ItemText(100, 100, "Arial", "30px", "Red", [`YOU ARE DEAD!`]));
+        }
     }
 }

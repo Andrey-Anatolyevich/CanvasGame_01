@@ -1,20 +1,12 @@
-/// <reference path="../itemsCommon/itemBase.ts"/>
+/// <reference path="../itemsBase/itemBase.ts"/>
 
 class ItemSquare extends ItemBase{
     constructor(width: number, height: number, color: string, x: number, y: number) {
-        super(itemType.Square);
+        super(ItemType.Square, x, y, width, height);
 
-        this.width = width;
-        this.height = height;
-        this.x = x;
-        this.y = y;
         this.color = color;
     }
 
-    public width: number;
-    public height: number;
-    public x: number;
-    public y: number;
     public color: string;
 
     public speedX: number = 0;

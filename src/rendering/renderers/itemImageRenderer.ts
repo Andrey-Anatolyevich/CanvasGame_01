@@ -1,6 +1,13 @@
 class ItemImageRenderer implements IRenderer {
-    itemType: itemType = itemType.Image;
-    render(canvasRenderingContext: CanvasRenderingContext2D, theItem: ItemBase): void {
+    public itemType: Array<ItemType> = [
+        ItemType.Image,
+        ItemType.BulletSimple,
+        ItemType.MonsterDummy,
+        ItemType.PlayerUnit,
+        ItemType.SpawnerSimple
+    ];
+
+    public render(canvasRenderingContext: CanvasRenderingContext2D, theItem: ItemBase): void {
         var theImage = theItem as ItemImage;
 
         let imageStore = ImageStore.GetInstance();
@@ -13,13 +20,10 @@ class ItemImageRenderer implements IRenderer {
         var scaleY = theImage.height / domImage.height;
 
         canvasRenderingContext.save();
-        canvasRenderingContext.translate(theImage.x, theImage.y);
+        canvasRenderingContext.translate(theImage.position.x, theImage.position.y);
         canvasRenderingContext.rotate(theImage.bodyAngle.valueRads);
         canvasRenderingContext.scale(scaleX, scaleY);
         canvasRenderingContext.drawImage(domImage, -halfDomImageWidth, -halfDomImageHeight, domImage.width, domImage.height);
         canvasRenderingContext.restore();
-
-        // canvasRenderingContext.fillStyle = "Purple";
-        // canvasRenderingContext.fillRect(theImage.x-1, theImage.y-1, 2, 2);
     }
 }

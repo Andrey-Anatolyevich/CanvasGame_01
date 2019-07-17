@@ -1,6 +1,7 @@
 class ItemTextRenderer implements IRenderer {
-    itemType: itemType = itemType.Text;
-    render(canvasRenderingContext: CanvasRenderingContext2D, theItem: ItemBase): void {
+    public itemType: Array<ItemType> = [ItemType.Text];
+
+    public render(canvasRenderingContext: CanvasRenderingContext2D, theItem: ItemBase): void {
         var castItem = theItem as ItemText;
 
         canvasRenderingContext.fillStyle = castItem.color;

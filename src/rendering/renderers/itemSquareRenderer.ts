@@ -1,9 +1,10 @@
 class ItemSquareRenderer implements IRenderer {
-    itemType: itemType = itemType.Square;
+    public itemType: Array<ItemType> = [ItemType.Square];
+
     render(canvasRenderingContext: CanvasRenderingContext2D, theItem: ItemBase): void {
         var castItem = theItem as ItemSquare;
 
         canvasRenderingContext.fillStyle = castItem.color;
-        canvasRenderingContext.fillRect(castItem.x, castItem.y, castItem.width, castItem.height);
+        canvasRenderingContext.fillRect(castItem.position.x, castItem.position.y, castItem.width, castItem.height);
     }
 }

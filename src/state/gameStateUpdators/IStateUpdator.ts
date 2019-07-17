@@ -1,4 +1,4 @@
 interface IStateUpdator {
-    itemType: itemType;
-    update(theItem: ItemBase, inputState: InputState, controlledByInput: boolean): void;
+    itemType: ItemType;
+    update(gameState: GameState, inputState: InputState, theItem: ItemBase, controlledByInput: boolean): void;
 }

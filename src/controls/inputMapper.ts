@@ -1,10 +1,10 @@
 class InputMapper {
     constructor(){
         this._map = [
-            new InputMapItem(InputButton.Left, [37]),
-            new InputMapItem(InputButton.Up, [38]),
-            new InputMapItem(InputButton.Right, [39]),
-            new InputMapItem(InputButton.Down, [40]),
+            new InputMapItem(InputButton.Left, [37, 65]),
+            new InputMapItem(InputButton.Up, [38, 87]),
+            new InputMapItem(InputButton.Right, [39, 68]),
+            new InputMapItem(InputButton.Down, [40, 83]),
             new InputMapItem(InputButton.Space, [32]),
         ];
     }

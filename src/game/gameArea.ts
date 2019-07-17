@@ -1,29 +1,31 @@
-// import { request } from "https";
-
 class GameArea {
     constructor(getInputStateFunc: () => InputState
         , mouseMoveHandler: (evt: MouseEvent) => void
         , clickHandler: (evt: MouseEvent) => void
         , unclickHandler: (evt: MouseEvent) => void) {
         this.getInputState = getInputStateFunc;
-        this.gameState.playerUnit = new ItemImage(this.viewPortWidth / 2, this.viewPortHeight / 2, "./assets/fly.jpg", 30, 30);
+        this.gameState.playerUnit = new PlayerUnit(this.viewPortWidth / 2, this.viewPortHeight / 2, Angle.default());
         this.gameState.field.gridEnabled = true;
         this.gameState.field.gridStep = 100;
         this.gameState.field.size = new Size(300, 300);
-        this.gameState.field.backgroundItems.push(new ItemImage(180, 200, "./assets/flower.png", 30, 30));
+        this.gameState.field.interactibleItems.push(new SpawnerSimple(180, 200, Angle.default()));
+
+        this.gameState.monsters.push(new MonsterDummy(200, 200, Angle.default()));
 
         this.canvas.addEventListener('mousemove', mouseMoveHandler);
         this.canvas.addEventListener('mousedown', clickHandler);
         this.canvas.addEventListener('mouseup', unclickHandler);
     }
 
-    private viewPortWidth: number = 480;
-    private viewPortHeight: number = 280;
+    private viewPortWidth: number = 600;
+    private viewPortHeight: number = 600;
     public canvas: HTMLCanvasElement = document.createElement("canvas");
     public canvasContext: CanvasRenderingContext2D = null as unknown as CanvasRenderingContext2D;
 
     public gameState: GameState = new GameState();
-    public stateService: GameStateService = new GameStateService();
+    public audioService: AudioService = new AudioService();
+    public geometryCalc: GeometryCalc = new GeometryCalc();
+    public stateService: GameStateService = new GameStateService(this.audioService, this.geometryCalc);
     public renderingService: RenderingService = new RenderingService();
     public updateGameAreaInterval: number = 0;
 
@@ -39,15 +41,24 @@ class GameArea {
         this.canvas.style.borderStyle = "solid";
 
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-        this.updateGameAreaInterval = setInterval(this.gameAreaUpdate.bind(this), 8) as unknown as number;
+
+        let intervalMs = 1000 / this.gameState.fpsIam;
+        this.updateGameAreaInterval = setInterval(this.gameAreaUpdate.bind(this), intervalMs) as unknown as number;
     };
 
     public gameAreaUpdate() {
-        let inputState = this.getInputState();
+        try {
+            if (this.gameState.playerIsDead)
+                clearInterval(this.updateGameAreaInterval);
 
-        this.stateService.updateState(this.gameState, inputState);
-        this.gameState.cameraSize.width = this.canvas.width;
-        this.gameState.cameraSize.height = this.canvas.height;
-        this.renderingService.renderState(this.canvasContext, this.gameState);
+            let inputState = this.getInputState();
+            this.stateService.updateState(this.gameState, inputState);
+            this.gameState.cameraSize.width = this.canvas.width;
+            this.gameState.cameraSize.height = this.canvas.height;
+            this.renderingService.renderState(this.canvasContext, this.gameState);
+        } catch (e) {
+            console.exception(e);
+            clearInterval(this.updateGameAreaInterval);
+        }
     };
 }

@@ -21,6 +21,8 @@ class UserInputService {
         let mappedButton = this.inputMapper.getMappedButton(e.keyCode);
         if (mappedButton != InputButton.Unknown)
             this.inputState.buttonPress(mappedButton);
+        else
+            console.log(`Pressed button code: '${e.keyCode}'`);
     }
 
     keyUp(e: KeyboardEvent) {

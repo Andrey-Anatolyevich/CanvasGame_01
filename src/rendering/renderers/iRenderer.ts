@@ -1,4 +1,4 @@
 interface IRenderer {
-    itemType: itemType;
+    itemType: Array<ItemType>;
     render(canvasRenderingContext: CanvasRenderingContext2D, theItem: ItemBase): void;
 }

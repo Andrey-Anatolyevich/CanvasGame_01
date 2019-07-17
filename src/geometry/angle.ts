@@ -7,6 +7,13 @@ class Angle {
         return new Angle();
     }
 
+    static random(): Angle {
+        let rnd = Math.random();
+        let piAngle = Math.PI * 2 * rnd;
+        let result = this.fromPi(piAngle);
+        return result;
+    }
+
     static fromPi(piAngle: number) {
         if (piAngle == null)
             throw new Error(`piAngle is NULL.`);
@@ -25,6 +32,11 @@ class Angle {
         // range [0, 360)
         result.valueRads = piAngle >= 0 ? piAngle : 360 + piAngle;
 
+        return result;
+    }
+
+    public clone(): Angle {
+        let result = Object.assign(new Angle(), this);
         return result;
     }
 }

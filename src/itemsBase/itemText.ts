@@ -1,6 +1,6 @@
 class ItemText extends ItemBase {
     constructor(x: number, y: number, fontName: string, fontSize: string, color: string, textLines: Array<string>) {
-        super(itemType.Text);
+        super(ItemType.Text, x, y, 0, 0);
 
         this.x = x;
         this.y = y;

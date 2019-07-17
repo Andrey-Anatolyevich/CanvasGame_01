@@ -1,7 +1,7 @@
 class itemSquareUpdator implements IStateUpdator {
-    itemType: itemType = itemType.Square;
+    itemType: ItemType = ItemType.Square;
 
-    update(square: ItemSquare, inputState: InputState, controlledByInput: boolean): void {
+    update(gameState: GameState, inputState: InputState, square: ItemSquare, controlledByInput: boolean): void {
         if (controlledByInput) {
             this.stopSquare(square);
             this.calcSpeed(square, inputState);
@@ -26,7 +26,7 @@ class itemSquareUpdator implements IStateUpdator {
     }
 
     calcNewPosition(square: ItemSquare) {
-        square.x += square.speedX;
-        square.y += square.speedY;
+        square.position.x += square.speedX;
+        square.position.y += square.speedY;
     }
 }

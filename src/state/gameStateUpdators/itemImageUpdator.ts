@@ -1,14 +1,19 @@
 class ItemImageUpdator implements IStateUpdator {
-    itemType: itemType = itemType.Image;
+    constructor(geometryCalc: GeometryCalc) {
+        this.geometryCalc = geometryCalc;
+    }
 
-    update(theItem: ItemImage, inputState: InputState, controlledByInput: boolean): void {
+    public itemType: ItemType = ItemType.Image;
+    private geometryCalc: GeometryCalc;
+
+    update(gameState: GameState, inputState: InputState, theItem: ItemImage, controlledByInput: boolean): void {
         if (controlledByInput) {
             this.stopMovement(theItem);
             this.calculateSpeed(inputState, theItem);
         }
         this.calcNewPosition(theItem);
         if (controlledByInput) {
-            theItem.bodyAngle = GeometryCalc.calcAngle(new Position(theItem.x, theItem.y), inputState.cursorPosition);
+            theItem.bodyAngle = this.geometryCalc.calcAngle(new Position(theItem.position.x, theItem.position.y), inputState.cursorPosition);
         }
     }
 
@@ -29,7 +34,7 @@ class ItemImageUpdator implements IStateUpdator {
     }
 
     calcNewPosition(theItem: ItemImage) {
-        theItem.x += theItem.speedX;
-        theItem.y += theItem.speedY;
+        theItem.position.x += theItem.speedX;
+        theItem.position.y += theItem.speedY;
     }
 }
